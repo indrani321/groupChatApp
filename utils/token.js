@@ -6,9 +6,9 @@ const jwt = require('jsonwebtoken');
 const dotenv= require('dotenv');
 dotenv.config();
 
-function generateAccessToken(id,ispremiumuser) {
+function generateAccessToken(id,email,name) {
   const secretKey = process.env.YOUR_KEY; // Replace with your secret key
-  const token = jwt.sign({ userId: id ,ispremiumuser:ispremiumuser}, secretKey);
+  const token = jwt.sign({ userId: id ,email:email, username:name}, secretKey);
   return token;
 }
 module.exports={generateAccessToken,}
