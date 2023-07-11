@@ -19,6 +19,7 @@ async function handleLogin(e) {
     );
     alert(response.data.message);
     localStorage.setItem('token',response.data.token);
+    sessionStorage.setItem('token',response.data.token);
     console.log(response.data.token);
     window.location.href="/chatapp";
   } catch (err) {

@@ -17,7 +17,7 @@ async function loginUser(req, res) {
           }
 
           if(result==true){
-              res.status(200).json({message:"successfully login",token:generateAccessToken(user[0].id, user[0].ispremiumuser)});
+              res.status(200).json({message:"successfully login",token:generateAccessToken(user[0].id,user[0].email,user[0].name)});
           }
           else{
               return res.status(400).json({message:"password is wrong"});

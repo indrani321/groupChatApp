@@ -22,18 +22,40 @@ function outputUserJoined(username) {
   user.textContent = `${username} joined.`;
   userlist.appendChild(user);
 }
-function outputUserLeave(username) {
-  const userlist = document.getElementById('userlist');
-  let user = document.createElement('li');
-  user.textContent = `${username} leave.`;
-  userlist.appendChild(user);
-}
 
 function getCurrentTime() {
   const now = new Date();
   const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   return time;
 }
+document.getElementById('add-chat').addEventListener('click', addChat);
+
+async function addChat(event) {
+  event.preventDefault();
+
+  const msg = document.getElementById('msg').value;
+  const token = sessionStorage.getItem("token");
+  const user = parseJwt(token);
+  
+  
+
+  const obj = {
+    message: msg,
+    userId: user.userId
+  };
+  try {
+    let response = await axios.post(
+      "/add-chat",
+      obj,
+      { headers: { Authorization: token } }
+    );
+    document.getElementById("msg").value='';
+    console.log('msg saved in DB');
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 
 window.addEventListener('DOMContentLoaded', async () => {
   let token = localStorage.getItem("token");
