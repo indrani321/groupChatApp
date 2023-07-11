@@ -20,9 +20,14 @@ async function handleLogin(e) {
     alert(response.data.message);
     localStorage.setItem('token',response.data.token);
     console.log(response.data.token);
-    window.location.href="/login";
+    window.location.href="/chatapp";
   } catch (err) {
-    console.log(err);
-    document.getElementById("err").innerText = err.response.data.message;
+    // console.log(err);
+    // document.getElementById("err").innerText = err.response.data.message;
+    if (err.response && err.response.status === 400) {
+        alert('user doesnt exist');
+      } else {
+        console.log(err);
+      }
   }
 }
