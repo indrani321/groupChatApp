@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const cors = require('cors')
 const db= require('./database/db')
 
 const app = express();
@@ -13,6 +14,8 @@ app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, 'views')));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(cors({origin:"http://127.0.0.1:5500",credentials:true}))
 
 app.use(signupRoute);
 
