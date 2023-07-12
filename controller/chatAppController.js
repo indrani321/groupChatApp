@@ -9,7 +9,7 @@ function chatApppage(req,res,next){
     res.sendFile(path.join(__dirname,'../views/chatApp.html'))
   }
   
-  async function addChat  (req, res, next) {
+async function addChat  (req, res, next) {
     const msg = req.body.message;
   
     const t = await db.transaction();
@@ -29,8 +29,19 @@ function chatApppage(req,res,next){
       console.log(err);
     }
   }
+
+
+  async function showChat(req, res) {
+      try {
+         const messages = await Message.findAll();
+        res.json(messages);
+      } catch (error) {
+        console.error('Error retrieving expenses:', error);
+        res.status(500).send('Internal server error');
+      }
+    }
   module.exports = {
     chatApppage,
     addChat,
-
+    showChat,
   }

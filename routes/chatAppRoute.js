@@ -8,6 +8,7 @@ const chatAppController = require('../controller/chatAppController');
 
 router.get('/chatapp',chatAppController.chatApppage);
 router.post('/add-chat', authentication.authenticate, chatAppController.addChat);
+router.get('/show-chat',chatAppController.showChat);
 
 
 
