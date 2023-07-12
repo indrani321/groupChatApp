@@ -1,3 +1,24 @@
+fetch('/show-chat')
+.then(response => response.json())
+.then(results =>{
+  const text = document.querySelector('.text');
+  
+  results.forEach(user => {
+    const textItem = document.createElement('li')
+    textItem.innerHTML=`
+    
+    ${user.name}:${user.message}`;
+     
+    text.appendChild(textItem);
+    })
+  })
+  .catch(error=>console.log(error));
+
+
+
+
+
+
 function parseJwt(token) {
   var base64Url = token.split(".")[1];
   var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -41,7 +62,8 @@ async function addChat(event) {
 
   const obj = {
     message: msg,
-    userId: user.userId
+    userId: user.userId,
+    name: user.name
   };
   try {
     let response = await axios.post(
@@ -107,3 +129,5 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 });
   
+
+

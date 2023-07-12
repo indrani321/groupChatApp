@@ -11,6 +11,7 @@ function chatApppage(req,res,next){
   
 async function addChat  (req, res, next) {
     const msg = req.body.message;
+    
   
     const t = await db.transaction();
     try {
@@ -18,6 +19,7 @@ async function addChat  (req, res, next) {
         {
           message: msg,
           userId: req.user.id,
+          name: req.user.name
         },
   
         { transaction: t }
