@@ -1,24 +1,3 @@
-fetch('/show-chat')
-.then(response => response.json())
-.then(results =>{
-  const text = document.querySelector('.text');
-  
-  results.forEach(user => {
-    const textItem = document.createElement('li')
-    textItem.innerHTML=`
-    
-    ${user.name}:${user.message}`;
-     
-    text.appendChild(textItem);
-    })
-  })
-  .catch(error=>console.log(error));
-
-
-
-
-
-
 function parseJwt(token) {
   var base64Url = token.split(".")[1];
   var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -35,8 +14,6 @@ function parseJwt(token) {
   return JSON.parse(jsonPayload);
 }
 
-
-
 function outputUserJoined(username) {
   const userlist = document.getElementById('userlist');
   let user = document.createElement('li');
@@ -49,6 +26,7 @@ function getCurrentTime() {
   const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   return time;
 }
+
 document.getElementById('add-chat').addEventListener('click', addChat);
 
 async function addChat(event) {
@@ -57,8 +35,6 @@ async function addChat(event) {
   const msg = document.getElementById('msg').value;
   const token = sessionStorage.getItem("token");
   const user = parseJwt(token);
-  
-  
 
   const obj = {
     message: msg,
@@ -71,13 +47,12 @@ async function addChat(event) {
       obj,
       { headers: { Authorization: token } }
     );
-    document.getElementById("msg").value='';
+    document.getElementById("msg").value = '';
     console.log('msg saved in DB');
   } catch (err) {
     console.log(err);
   }
 }
-
 
 window.addEventListener('DOMContentLoaded', async () => {
   let token = localStorage.getItem("token");
@@ -85,13 +60,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   const name = decode.username;
   outputUserJoined(name);
 
-
   const chatForm = document.getElementById('chat-form');
   chatForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const msg = e.target.elements.msg.value;
-     const currentTime = getCurrentTime();
-    outputMessage({ message: msg, sender: name  });
+    const currentTime = getCurrentTime();
+    outputMessage({ message: msg, sender: name });
     document.getElementById('msg').value = '';
     document.getElementById('msg').focus();
   });
@@ -105,7 +79,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   function updateUsersList(loggedInUsers) {
     const userlist = document.getElementById('userlist');
-    userlist.innerHTML = ''; 
+    userlist.innerHTML = '';
 
     for (const username of loggedInUsers) {
       outputUserJoined(username);
@@ -124,10 +98,31 @@ window.addEventListener('DOMContentLoaded', async () => {
       loggedInUsers.splice(index, 1);
       localStorage.setItem('loggedInUsers', JSON.stringify(loggedInUsers));
     }
-    
+
     window.location.href = '/login';
   });
+
 });
+
+  function getNewMessages() {
+    axios.get('/show-chat')
+      .then(response => {
+        const messages = response.data;
+        const messageList = document.getElementById('message-list');
+        messageList.innerHTML = '';
+
+        messages.forEach(message => {
+          const listItem = document.createElement('li');
+          listItem.setAttribute('id', `message-item-${message.id}`);
+          const date = new Date(message.date).toLocaleDateString();
+
+          listItem.innerHTML = `<strong>${message.name}:</strong> ${message.message}`;
+          messageList.appendChild(listItem);
+        });
+      })
+      .catch(error => {
+        console.error('Error retrieving messages:', error);
+      });
+  }
   
-
-
+  setInterval(getNewMessages, 1000);
