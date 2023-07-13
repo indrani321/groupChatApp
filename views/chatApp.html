@@ -10,25 +10,29 @@
 </head>
 
 <body>
+    <button id="log">Leave Chat</button>
     <div class="container">
         <div>
             <h1>Chat App</h1>
+            <hr>
         </div>
         <ul id="userlist"></ul>
         <div class="chat-messages">
+            <hr>
             <div>
                 <h2></h2>
                 <ul id="message-list"></ul>
               </div>
         </div>
-        <div class="chat-form-container">
+        
+<div class="chat-form-container">
             <form id="chat-form">
                 <input type="text" id="msg" placeholder="enter message" autocomplete="off" required>
                 <button class="btn" id="add-chat">send</button>
             </form>
         </div>
     </div>
-    <button id="log">Leave Chat</button>
+    
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     
     <script src="/chatApp.js"></script>

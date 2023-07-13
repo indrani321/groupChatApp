@@ -26,10 +26,22 @@ function getCurrentTime() {
   const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   return time;
 }
+async function updateLocalStorageWithMessages() {
+  try {
+    const response = await axios.get('/show-chat');
+    const messages = response.data;
+    const lastTenMessages = messages.slice(-10); // Get the last 10 messages
+
+    // Store the last 10 messages in local storage
+    localStorage.setItem('lastTenMessages', JSON.stringify(lastTenMessages));
+  } catch (error) {
+    console.error('Error retrieving messages:', error);
+  }
+}
 
 document.getElementById('add-chat').addEventListener('click', addChat);
 
-async function addChat(event) {
+ async function addChat(event) {
   event.preventDefault();
 
   const msg = document.getElementById('msg').value;
@@ -49,6 +61,7 @@ async function addChat(event) {
     );
     document.getElementById("msg").value = '';
     console.log('msg saved in DB');
+    updateLocalStorageWithMessages();
   } catch (err) {
     console.log(err);
   }
@@ -101,28 +114,43 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     window.location.href = '/login';
   });
+  const storedMessages = JSON.parse(localStorage.getItem('lastTenMessages')) || [];
+
+  // Display messages on the HTML page
+  const messageList = document.getElementById('message-list');
+  messageList.innerHTML = '';
+
+  storedMessages.forEach(message => {
+    const listItem = document.createElement('li');
+    listItem.setAttribute('id', `message-item-${message.id}`);
+    listItem.innerHTML = `<strong>${message.name}:</strong> ${message.message}`;
+    messageList.appendChild(listItem);
+  });
+  
+  // updateLocalStorageWithMessages();
+  setInterval(updateLocalStorageWithMessages, 1000);
 
 });
 
-  function getNewMessages() {
-    axios.get('/show-chat')
-      .then(response => {
-        const messages = response.data;
-        const messageList = document.getElementById('message-list');
-        messageList.innerHTML = '';
+  // function getNewMessages() {
+  //   axios.get('/show-chat')
+  //     .then(response => {
+  //       const messages = response.data;
+  //       const messageList = document.getElementById('message-list');
+  //       messageList.innerHTML = '';
 
-        messages.forEach(message => {
-          const listItem = document.createElement('li');
-          listItem.setAttribute('id', `message-item-${message.id}`);
-          const date = new Date(message.date).toLocaleDateString();
+  //       messages.forEach(message => {
+  //         const listItem = document.createElement('li');
+  //         listItem.setAttribute('id', `message-item-${message.id}`);
+  //         const date = new Date(message.date).toLocaleDateString();
 
-          listItem.innerHTML = `<strong>${message.name}:</strong> ${message.message}`;
-          messageList.appendChild(listItem);
-        });
-      })
-      .catch(error => {
-        console.error('Error retrieving messages:', error);
-      });
-  }
+  //         listItem.innerHTML = `<strong>${message.name}:</strong> ${message.message}`;
+  //         messageList.appendChild(listItem);
+  //       });
+  //     })
+  //     .catch(error => {
+  //       console.error('Error retrieving messages:', error);
+  //     });
+  // }
   
-  setInterval(getNewMessages, 1000);
+  // setInterval(getNewMessages, 1000);
