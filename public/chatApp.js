@@ -62,7 +62,8 @@ document.getElementById('add-chat').addEventListener('click', addChat);
       { headers: { Authorization: token } }
     );
     document.getElementById("msg").value = '';
-    console.log('msg saved in DB');
+    
+    
     updateLocalStorageWithMessages();
   } catch (err) {
     console.log(err);
@@ -70,6 +71,10 @@ document.getElementById('add-chat').addEventListener('click', addChat);
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
+  const groupname = localStorage.getItem('groupname');
+  if (groupname) {
+    updatePageWithGroupName(groupname);
+  }
   let token = localStorage.getItem("token");
   const decode = parseJwt(token);
   const name = decode.username;
@@ -116,6 +121,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     window.location.href = '/login';
   });
+
   
   function displayMessages() {
     const storedMessages = JSON.parse(localStorage.getItem('lastTenMessages')) || [];
@@ -137,12 +143,82 @@ window.addEventListener('DOMContentLoaded', async () => {
   
   
   setInterval(displayMessages, 1000);
-  
 
 });
 
+function fetchUsers() {
+  axios.get('/get-user')
+    .then(response => {
+      const userData = response.data;
+      const userNames = userData.name; // Access the name property of the response data
+      
+      const userlistElement = document.getElementById('group-members');
+      userlistElement.innerHTML = '';
+
+      userNames.forEach(userName => {
+        const listItem = document.createElement('li');
+        listItem.textContent = userName;
+        const inviteButton = document.createElement('button');
+        inviteButton.textContent = 'Invite';
+        inviteButton.id = `invite-button-${userName}`;
+        
+        inviteButton.addEventListener('click', () => inviteUser(userName));
+
+        listItem.appendChild(inviteButton);
+        userlistElement.appendChild(listItem);
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching user data:', error);
+    });
+}
 
 
 
 
+
+function createGroup() {
+  var groupname = prompt("Enter the group name:");
+  if (groupname) {
+    axios.post('/save-group', { groupname })
+    .then(response => {
+      console.log('Group name saved:', response.data);
+      const groupname = response.data.group.groupname;
+        updatePageWithGroupName(groupname);
+        saveGroupNameToLocalStorage(groupname);
+    })
+    .catch(error => {
+      console.error('Error saving group name:', error);
+    });
+      console.log("Group Name:", groupname);
+      fetchUsers();
+  }
+}
+
+function inviteUser(name) {
+  const message = `You invited ${name} to the group.`;
+  alert(message);
+
+  // Add the logic to join the user to the group
+  axios.post('/join-group', { name })
+    .then(response => {
+      console.log('User joined the group:', response.data);
+    })
+    .catch(error => {
+      console.error('Error joining the group:', error);
+    });
+}
+
+function updatePageWithGroupName(groupname) {
+  const groupnameElement = document.getElementById('group-name');
+  groupnameElement.textContent = `you are admin of ${groupname}`;
+  const groupnamebutton = document.createElement('button');
+  groupnamebutton.textContent = `${groupname}`;
+  groupnameElement.appendChild(groupnamebutton);
+
+}
+
+function saveGroupNameToLocalStorage(groupname) {
+  localStorage.setItem('groupname', groupname);
+}
   

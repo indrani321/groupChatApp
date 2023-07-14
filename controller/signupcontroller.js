@@ -26,11 +26,27 @@ async function createUser(req, res, next) {
 }
 
 
+async function getUser(req, res, next) {
+  try {
+    const users = await User.findAll();
+    const usernames = users.map(user => user.name); // Extract usernames from the user objects
+
+    res.status(200).json({ name: usernames }); // Return the usernames as 'name' property
+  } catch (error) {
+    console.error('Error retrieving usernames:', error);
+    res.status(500).send('Internal Server Error');
+  }
+}
+
+
+
+
 function getSignPage(req,res,next){
   res.sendFile(path.join(__dirname,'../views/signup.html'))
 }
 
 module.exports = {
   createUser,
-  getSignPage
+  getSignPage,
+  getUser,
 };
