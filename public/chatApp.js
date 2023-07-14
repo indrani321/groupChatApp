@@ -30,14 +30,16 @@ async function updateLocalStorageWithMessages() {
   try {
     const response = await axios.get('/show-chat');
     const messages = response.data;
-    const lastTenMessages = messages.slice(-10); // Get the last 10 messages
+    const lastTenMessages = messages.slice(-10); 
 
-    // Store the last 10 messages in local storage
+    
     localStorage.setItem('lastTenMessages', JSON.stringify(lastTenMessages));
   } catch (error) {
     console.error('Error retrieving messages:', error);
   }
+  
 }
+
 
 document.getElementById('add-chat').addEventListener('click', addChat);
 
@@ -114,43 +116,33 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     window.location.href = '/login';
   });
-  const storedMessages = JSON.parse(localStorage.getItem('lastTenMessages')) || [];
-
-  // Display messages on the HTML page
-  const messageList = document.getElementById('message-list');
-  messageList.innerHTML = '';
-
-  storedMessages.forEach(message => {
-    const listItem = document.createElement('li');
-    listItem.setAttribute('id', `message-item-${message.id}`);
-    listItem.innerHTML = `<strong>${message.name}:</strong> ${message.message}`;
-    messageList.appendChild(listItem);
-  });
   
-  // updateLocalStorageWithMessages();
-  setInterval(updateLocalStorageWithMessages, 1000);
+  function displayMessages() {
+    const storedMessages = JSON.parse(localStorage.getItem('lastTenMessages')) || [];
+  
+    
+    const messageList = document.getElementById('message-list');
+    messageList.innerHTML = '';
+  
+    storedMessages.forEach(message => {
+      const listItem = document.createElement('li');
+      listItem.setAttribute('id', `message-item-${message.id}`);
+      listItem.innerHTML = `<strong>${message.name}:</strong> ${message.message}`;
+      messageList.appendChild(listItem);
+    });
+  }
+  
+
+  displayMessages();
+  
+  
+  setInterval(displayMessages, 1000);
+  
 
 });
 
-  // function getNewMessages() {
-  //   axios.get('/show-chat')
-  //     .then(response => {
-  //       const messages = response.data;
-  //       const messageList = document.getElementById('message-list');
-  //       messageList.innerHTML = '';
 
-  //       messages.forEach(message => {
-  //         const listItem = document.createElement('li');
-  //         listItem.setAttribute('id', `message-item-${message.id}`);
-  //         const date = new Date(message.date).toLocaleDateString();
 
-  //         listItem.innerHTML = `<strong>${message.name}:</strong> ${message.message}`;
-  //         messageList.appendChild(listItem);
-  //       });
-  //     })
-  //     .catch(error => {
-  //       console.error('Error retrieving messages:', error);
-  //     });
-  // }
+
+
   
-  // setInterval(getNewMessages, 1000);
